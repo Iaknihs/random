@@ -1,5 +1,4 @@
 """
-
 [2019-02-13] Challenge #375 [Intermediate] A Card Flipping Game
 Description
 This challenge is about a simple card flipping solitaire game.
@@ -63,13 +62,22 @@ FACES = ['0', '1']
 
 def solution(cards):
     """
-    This solution
+    This recursive solution works, but is pretty slow in long cases, especially if there are no solutions.
 
-    :param cards:
+    :param cards: string representing the card deck
     :return:
     """
 
     def recursion(crds, moves=None, steps=None):
+        """
+        recusrive function doing the actual computation.
+        Depth-first traversal of all possible actions.
+
+        :param crds: string representing the card deck
+        :param moves: list of moves done so far on this path
+        :param steps: list visualising the deck at each step.
+        :return:
+        """
         if moves is None:
             moves = list()
         if steps is None:
@@ -101,12 +109,22 @@ def solution(cards):
 
 
 def sample_inputs():
+    """
+    run the sample inputs as provided in the task
+
+    :return:
+    """
     solution("0100110")
     solution("01001100111")
     solution("100001100101000")
 
 
 def challenge_inputs():
+    """
+    run the challenge inputs as provided in the task
+
+    :return:
+    """
     solution("0100110")
     solution("001011011101001001000")
     solution("1010010101001011011001011101111")
@@ -114,8 +132,15 @@ def challenge_inputs():
 
 
 def bonus_input():
+    """
+    run the bonus input as provided in the task
+
+    :return:
+    """
     solution("010111111111100100101000100110111000101111001001011011000011000")
 
 
 if __name__ == '__main__':
+    sample_inputs()
+    challenge_inputs()
     bonus_input()
