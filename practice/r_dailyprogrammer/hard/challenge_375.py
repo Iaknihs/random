@@ -181,15 +181,30 @@ Jaime Lannister ++ Euron Greyjoy
 
 
 def solution(data):
+    """
+    solution~ seems to get the correct result. most of the code just formats the text into a nice nxn matrix,
+    to make the comparison less annoying!
+    the for i for j for k bit just compares if any combination of i < j < k exists such that the sum of our 'edges'
+    (denoted 1 for positive and -1 for negative) for subgraph of 3 nodes is always either 3 (all positive)
+    or -1 (2 neg, 1 pos).
+
+    :param data: a big'ol chunk of text. see task for format details.
+    :return:
+    """
     lines = data.splitlines()
-    edges = []
     n = 0
     m = 0
+    names = []
+    connections = 0
     for i in range(len(lines)):
         if i == 0:
             temp = lines[i].split(' ')
-            n = temp[0]
-            m = temp[1]
+            # input N and M were swapped in the task, so I just set n to be the smaller and m the larger number
+            m = max(int(temp[1]), int(temp[0]))
+            n = min(int(temp[1]), int(temp[0]))
+            if n < 3:
+                raise ValueError("Graph too small. Need at least 3 Nodes.")
+            connections = [[None for x in range(n)] for y in range(n)]
             continue
         if i > m:
             break
@@ -198,6 +213,7 @@ def solution(data):
         val = 0
         post = ''
         for item in sub:
+            # recognize ++ and --, merge everything before/after ++/-- into 1 string each
             if val == 0:
                 if item not in ['++', '--']:
                     pre += (' ' if pre != '' else '') + item
@@ -208,12 +224,184 @@ def solution(data):
                         val = -1
             else:
                 post += (' ' if post != '' else '') + item
-        edges.append((pre, post, val))
-    for i in range(len(edges)):
-        for j in range(i, len(edges))
-            # TODO:: put people into arrays instead!
+        # list all names
+        if pre not in names:
+            names.append(pre)
+        if post not in names:
+            names.append(post)
+        # update values 1 / -1 in matrix based on ++ / --
+        # None elements are just placeholders, so this warning can be ignored.
+        connections[names.index(pre)][names.index(post)] = val
+        print(names)
+        for vec in connections:
+            print(vec)
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # ACTUAL COMPARISON STARTS HERE!
+    for i in range(len(connections)):
+        for j in range(i+1, len(connections)):
+            for k in range(j+1, len(connections)):
+                # 1 + 1 + 1 = 3, 1 - 1 - 1 = -1, thus the sum of 3 edges in a circle must always be in [3, -1]
+                if connections[i][j] + connections[j][k] + connections[i][k] not in [3, -1]:
+                    print("unbalanced")
+                    return
+    # if nothing was returned as unbalanced yet, it's balanced.
+    print("balanced")
+    return
 
+
+def example_input():
+    """
+    example gets the correct result! (balanced)
+
+    :return:
+    """
+    solution("6 15\n"
+             "Superman ++ Green Lantern\n"
+             "Superman ++ Wonder Woman\n"
+             "Superman -- Sinestro\n"
+             "Superman -- Cheetah\n"
+             "Superman -- Lex Luthor\n"
+             "Green Lantern ++ Wonder Woman\n"
+             "Green Lantern -- Sinestro\n"
+             "Green Lantern -- Cheetah\n"
+             "Green Lantern -- Lex Luthor\n"
+             "Wonder Woman -- Sinestro\n"
+             "Wonder Woman -- Cheetah\n"
+             "Wonder Woman -- Lex Luthor\n"
+             "Sinestro ++ Cheetah\n"
+             "Sinestro ++ Lex Luthor\n"
+             "Cheetah ++ Lex Luthor")
+
+
+def challenge_input():
+    """
+    Challenge gets the correct result, too! (unbalanced)
+
+    :return:
+    """
+    solution("120 16\n"
+             "Daenerys Targaryen ++ Jon Snow\n"
+             "Daenerys Targaryen ++ Tyrion Lannister\n"
+             "Daenerys Targaryen ++ Varys\n"
+             "Daenerys Targaryen ++ Jorah Mormont\n"
+             "Daenerys Targaryen ++ Beric Dondarrion\n"
+             "Daenerys Targaryen ++ Sandor “the Hound” Clegane\n"
+             "Daenerys Targaryen ++ Theon and Yara Greyjoy\n"
+             "Daenerys Targaryen -- Sansa Stark\n"
+             "Daenerys Targaryen -- Arya Stark\n"
+             "Daenerys Targaryen -- Bran Stark\n"
+             "Daenerys Targaryen -- The Lords of the North and the Vale\n"
+             "Daenerys Targaryen -- Littlefinger\n"
+             "Daenerys Targaryen -- Cersei Lannister\n"
+             "Daenerys Targaryen -- Jaime Lannister\n"
+             "Daenerys Targaryen -- Euron Greyjoy\n"
+             "Jon Snow ++ Tyrion Lannister\n"
+             "Jon Snow ++ Varys\n"
+             "Jon Snow ++ Jorah Mormont\n"
+             "Jon Snow ++ Beric Dondarrion\n"
+             "Jon Snow ++ Sandor “the Hound” Clegane\n"
+             "Jon Snow -- Theon and Yara Greyjoy\n"
+             "Jon Snow -- Sansa Stark\n"
+             "Jon Snow -- Arya Stark\n"
+             "Jon Snow -- Bran Stark\n"
+             "Jon Snow -- The Lords of the North and the Vale\n"
+             "Jon Snow -- Littlefinger\n"
+             "Jon Snow -- Cersei Lannister\n"
+             "Jon Snow -- Jaime Lannister\n"
+             "Jon Snow -- Euron Greyjoy\n"
+             "Tyrion Lannister ++ Varys\n"
+             "Tyrion Lannister ++ Jorah Mormont\n"
+             "Tyrion Lannister ++ Beric Dondarrion\n"
+             "Tyrion Lannister ++ Sandor “the Hound” Clegane\n"
+             "Tyrion Lannister ++ Theon and Yara Greyjoy\n"
+             "Tyrion Lannister -- Sansa Stark\n"
+             "Tyrion Lannister -- Arya Stark\n"
+             "Tyrion Lannister -- Bran Stark\n"
+             "Tyrion Lannister -- The Lords of the North and the Vale\n"
+             "Tyrion Lannister -- Littlefinger\n"
+             "Tyrion Lannister -- Cersei Lannister\n"
+             "Tyrion Lannister -- Jaime Lannister\n"
+             "Tyrion Lannister -- Euron Greyjoy\n"
+             "Varys ++ Jorah Mormont\n"
+             "Varys ++ Beric Dondarrion\n"
+             "Varys ++ Sandor “the Hound” Clegane\n"
+             "Varys ++ Theon and Yara Greyjoy\n"
+             "Varys -- Sansa Stark\n"
+             "Varys -- Arya Stark\n"
+             "Varys -- Bran Stark\n"
+             "Varys -- The Lords of the North and the Vale\n"
+             "Varys -- Littlefinger\n"
+             "Varys -- Cersei Lannister\n"
+             "Varys -- Jaime Lannister\n"
+             "Varys -- Euron Greyjoy\n"
+             "Jorah Mormont ++ Beric Dondarrion\n"
+             "Jorah Mormont ++ Sandor “the Hound” Clegane\n"
+             "Jorah Mormont ++ Theon and Yara Greyjoy\n"
+             "Jorah Mormont -- Sansa Stark\n"
+             "Jorah Mormont -- Arya Stark\n"
+             "Jorah Mormont -- Bran Stark\n"
+             "Jorah Mormont -- The Lords of the North and the Vale\n"
+             "Jorah Mormont -- Littlefinger\n"
+             "Jorah Mormont -- Cersei Lannister\n"
+             "Jorah Mormont -- Jaime Lannister\n"
+             "Jorah Mormont -- Euron Greyjoy\n"
+             "Beric Dondarrion ++ Sandor “the Hound” Clegane\n"
+             "Beric Dondarrion ++ Theon and Yara Greyjoy\n"
+             "Beric Dondarrion -- Sansa Stark\n"
+             "Beric Dondarrion -- Arya Stark\n"
+             "Beric Dondarrion -- Bran Stark\n"
+             "Beric Dondarrion -- The Lords of the North and the Vale\n"
+             "Beric Dondarrion -- Littlefinger\n"
+             "Beric Dondarrion -- Cersei Lannister\n"
+             "Beric Dondarrion -- Jaime Lannister\n"
+             "Beric Dondarrion -- Euron Greyjoy\n"
+             "Sandor “the Hound” Clegane ++ Theon and Yara Greyjoy\n"
+             "Sandor “the Hound” Clegane -- Sansa Stark\n"
+             "Sandor “the Hound” Clegane -- Arya Stark\n"
+             "Sandor “the Hound” Clegane -- Bran Stark\n"
+             "Sandor “the Hound” Clegane -- The Lords of the North and the Vale\n"
+             "Sandor “the Hound” Clegane -- Littlefinger\n"
+             "Sandor “the Hound” Clegane -- Cersei Lannister\n"
+             "Sandor “the Hound” Clegane -- Jaime Lannister\n"
+             "Sandor “the Hound” Clegane -- Euron Greyjoy\n"
+             "Theon and Yara Greyjoy -- Sansa Stark\n"
+             "Theon and Yara Greyjoy -- Arya Stark\n"
+             "Theon and Yara Greyjoy -- Bran Stark\n"
+             "Theon and Yara Greyjoy -- The Lords of the North and the Vale\n"
+             "Theon and Yara Greyjoy -- Littlefinger\n"
+             "Theon and Yara Greyjoy -- Cersei Lannister\n"
+             "Theon and Yara Greyjoy -- Jaime Lannister\n"
+             "Theon and Yara Greyjoy -- Euron Greyjoy\n"
+             "Sansa Stark ++ Arya Stark\n"
+             "Sansa Stark ++ Bran Stark\n"
+             "Sansa Stark ++ The Lords of the North and the Vale\n"
+             "Sansa Stark ++ Littlefinger\n"
+             "Sansa Stark -- Cersei Lannister\n"
+             "Sansa Stark -- Jaime Lannister\n"
+             "Sansa Stark -- Euron Greyjoy\n"
+             "Arya Stark ++ Bran Stark\n"
+             "Arya Stark ++ The Lords of the North and the Vale\n"
+             "Arya Stark ++ Littlefinger\n"
+             "Arya Stark -- Cersei Lannister\n"
+             "Arya Stark -- Jaime Lannister\n"
+             "Arya Stark -- Euron Greyjoy\n"
+             "Bran Stark ++ The Lords of the North and the Vale\n"
+             "Bran Stark -- Littlefinger\n"
+             "Bran Stark -- Cersei Lannister\n"
+             "Bran Stark -- Jaime Lannister\n"
+             "Bran Stark -- Euron Greyjoy\n"
+             "The Lords of the North and the Vale ++ Littlefinger\n"
+             "The Lords of the North and the Vale -- Cersei Lannister\n"
+             "The Lords of the North and the Vale -- Jaime Lannister\n"
+             "The Lords of the North and the Vale -- Euron Greyjoy\n"
+             "Littlefinger -- Cersei Lannister\n"
+             "Littlefinger -- Jaime Lannister\n"
+             "Littlefinger -- Euron Greyjoy\n"
+             "Cersei Lannister ++ Jaime Lannister\n"
+             "Cersei Lannister ++ Euron Greyjoy\n"
+             "Jaime Lannister ++ Euron Greyjoy\n")
 
 
 if __name__ == '__main__':
-    solution("TEST\nA\nB")
+    # example_input()
+    challenge_input()
