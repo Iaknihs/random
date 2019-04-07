@@ -3,3 +3,4 @@ matplotlib
 pandas
 gspread
 oauth2client
+pynput
